@@ -6,6 +6,11 @@
 
 티스토리 공식 Open API는 2024년 2월 종료됐다(글·댓글·첨부 모두). 이 앱은 관리 페이지가 내부적으로 쓰는 비공식 엔드포인트를 **세션 쿠키로 직접 호출**한다. CSRF 토큰은 없고 `origin`/`referer` + 세션 쿠키로 인증된다(실측 확인). **본인 블로그에 본인 글을 발행하는 용도**로 한정한다.
 
+## 문서
+
+- [docs/tistory-internal-api.md](./docs/tistory-internal-api.md) — 역공학한 티스토리 **비공식 API 계약** (엔드포인트·페이로드·visibility·필수 쿠키·응답, 깨질 때 재캡처 기준)
+- [docs/auth-and-secrets.md](./docs/auth-and-secrets.md) — **세션 쿠키 + 시크릿 암호화 흐름** (변수 등록·DEK 암호화·복호화 사용·신뢰 경계·`isSecret` 함정)
+
 ## 액션
 
 ### `tistory.publish` — 글 발행
@@ -31,9 +36,11 @@
    (Windows에서 bun은 Chromium CDP launch가 hang하므로 **반드시 node**.)
 2. 뜬 창에서 카카오 로그인 → 창을 닫으면 `state.json` 생성.
 3. windforce 변수 등록:
-   - `tistory/storage_state` = `state.json` 파일 내용 전체 (`is_secret: true`)
+   - `tistory/storage_state` = `state.json` 파일 내용 전체 (**`isSecret: true`** — DEK 암호화 저장)
    - `tistory/blog` = 블로그 식별자 (예: `pak2251`)
 4. 세션 만료 시 1~3 반복.
+
+> ⚠️ 변수 등록 JSON 필드는 **`isSecret`(camelCase)** 다. `is_secret`(snake)로 보내면 핸들러가 무시해 **평문 저장**되니 주의(세션 쿠키는 반드시 암호화돼야 함).
 
 > 필요한 쿠키는 `TSSESSION`·`__T_`·`__T_SECURE`·`IS_TC`·`_T_ANO`(tistory.com 도메인). `buildCookieHeader`가 storage_state에서 자동 추출한다.
 
@@ -51,7 +58,7 @@ git -C .. clone --bare tistory-publisher tistory-publisher.git
 
 # 3) 변수 등록
 #    POST /api/w/ws-alpha/variables { path:"tistory/blog", value:"pak2251" }
-#    POST /api/w/ws-alpha/variables { path:"tistory/storage_state", value:<state.json>, is_secret:true }
+#    POST /api/w/ws-alpha/variables { path:"tistory/storage_state", value:<state.json>, isSecret:true }
 
 # 4) 목록 조회(부작용 없음 — 먼저 이걸로 인증 검증)
 #    POST /api/w/ws-alpha/jobs/run/tistory/tistory.list   {}
