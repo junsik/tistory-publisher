@@ -1,0 +1,9 @@
+{
+  "type": "object",
+  "properties": {
+    "blog": { "type": "string", "description": "블로그 식별자(예: pak2251). 생략 시 변수 tistory/blog 사용" },
+    "visibility": { "type": "string", "enum": ["all", "public", "private", "protected"], "description": "공개 범위 필터(기본 all)" },
+    "maxPages": { "type": "integer", "description": "수집 페이지 상한(기본 200)" }
+  },
+  "required": []
+}

@@ -1,0 +1,9 @@
+{
+  "name": "tistory-publisher",
+  "type": "module",
+  "private": true,
+  "description": "windforce action that publishes markdown posts to Tistory",
+  "dependencies": {
+    "marked": "^15.0.0"
+  }
+}

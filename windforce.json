@@ -1,0 +1,11 @@
+{
+  "app": "tistory",
+  "entrypoint": "main.ts",
+  "scriptLang": "typescript",
+  "timeout": 120,
+  "tag": "default",
+  "actions": {
+    "tistory.publish": { "inputSchema": "schemas/publish.json", "timeout": 60 },
+    "tistory.list": { "inputSchema": "schemas/list.json", "timeout": 120 }
+  }
+}
